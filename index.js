@@ -8,6 +8,7 @@ app.get("/", (req, res) => {
   return res.json({
     message: "Server is healthy ",
     status: "production",
+    change:"I am responding to the changes "
   });
 });
 
