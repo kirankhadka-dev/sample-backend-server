@@ -19,7 +19,7 @@ jobs:
           username: ubuntu 
           key: ${{secrets.AWS_PEM_KEY}}
           script:  |
-            cd /home/ubuntu/sample-backend-server 
+            cd home/ubuntu/sample-backend-server
             git pull 
             npm install 
             pm2 restart 0
