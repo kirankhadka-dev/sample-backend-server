@@ -27,7 +27,7 @@ jobs:
 
       - name: Docker Build And Push 
         run: | 
-          docker build - t kirankhadka/kiran-node-server  .  
+          docker build -t kirankhadka/kiran-node-server  .  
           docker push kirankhadka/kiran-node-server 
 
 
