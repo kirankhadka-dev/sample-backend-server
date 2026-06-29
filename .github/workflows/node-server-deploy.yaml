@@ -39,13 +39,13 @@ jobs:
           port: 22
           script: |
             # Remove existing container if it exists
-            docker rm -f kiran-node-server || true
+            sudo docker rm -f kiran-node-server || true
 
             # Pull the latest image
-            docker pull kirankhadka/kiran-node-server:latest
+            sudo docker pull kirankhadka/kiran-node-server:latest
 
             # Run a new container
-            docker run -d \
+            sudo docker run -d \
               --name kiran-node-server \
               --restart unless-stopped \
               -p 8000:8000 \
