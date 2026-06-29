@@ -1,30 +1,51 @@
-name: Deploy Nodejs Code on AWS 
+name: Deploy Node.js Backend to AWS EC2
 
-on: 
+on:
   push:
     branches:
-      - main 
+      - main
+
 jobs:
   deploy:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code 
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy on AWS 
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
-        with: 
-          host: 3.27.3.39
-          username: ubuntu 
-          key: ${{secrets.AWS_PEM_KEY}}
-          script:  |
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            # Verify Node.js environment
+            echo "Node Version:"
+            node -v
+
+            echo "NPM Version:"
+            npm -v
+
+            echo "PM2 Version:"
+            pm2 -v
+
+            # Go to project
             cd /home/ubuntu/sample-backend-server
-            git pull 
-            npm install 
+
+            # Pull latest changes
+            git pull origin main
+
+            # Install dependencies
+            npm install
+
+            # Restart application
             pm2 restart 0
 
-
-
-
-
+            # Save PM2 process list
+            pm2 save
