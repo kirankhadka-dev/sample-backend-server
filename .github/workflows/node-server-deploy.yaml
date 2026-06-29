@@ -13,23 +13,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub 
-        uses: docker/login-action@v4 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
         with:
-          username: ${{vars.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up QEMU 
-        uses: docker/setup-qemu-action@v4  
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx   
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Docker Build And Push 
-        run: | 
-          docker build -t kirankhadka/kiran-node-server  .  
-          docker push kirankhadka/kiran-node-server 
-
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t kirankhadka/kiran-node-server:latest .
+          docker push kirankhadka/kiran-node-server:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
@@ -39,31 +38,15 @@ jobs:
           key: ${{ secrets.AWS_PEM_KEY }}
           port: 22
           script: |
-            # Load NVM
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            # Remove existing container if it exists
+            docker rm -f kiran-node-server || true
 
-            # Verify Node.js environment
-            echo "Node Version:"
-            node -v
+            # Pull the latest image
+            docker pull kirankhadka/kiran-node-server:latest
 
-            echo "NPM Version:"
-            npm -v
-
-            echo "PM2 Version:"
-            pm2 -v
-
-            # Go to project
-            cd /home/ubuntu/sample-backend-server
-
-            # Pull latest changes
-            git pull origin main
-
-            # Install dependencies
-            npm install
-
-            # Restart application
-            pm2 restart 0
-
-            # Save PM2 process list
-            pm2 save
+            # Run a new container
+            docker run -d \
+              --name kiran-node-server \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              kirankhadka/kiran-node-server:latest
