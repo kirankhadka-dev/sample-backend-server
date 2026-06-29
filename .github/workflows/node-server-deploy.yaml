@@ -16,9 +16,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
+          host: 3.27.3.39
           username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.AWS_PEM_KEY }}
           port: 22
           script: |
             # Load NVM
