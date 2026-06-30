@@ -25,9 +25,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and Push Docker Image
+      - name: Build Docker Image
         run: |
           docker build -t kirankhadka/kiran-node-server:latest .
+
+      - name: Push Docker Image
+        run: |
           docker push kirankhadka/kiran-node-server:latest
 
       - name: Deploy to EC2
@@ -38,15 +41,10 @@ jobs:
           key: ${{ secrets.AWS_PEM_KEY }}
           port: 22
           script: |
-            # Remove existing container if it exists
-            sudo docker rm -f kiran-node-server || true
+            cd ~/sample-backend-server
 
-            # Pull the latest image
-            sudo docker pull kirankhadka/kiran-node-server:latest
+            docker compose pull
 
-            # Run a new container
-            sudo docker run -d \
-              --name kiran-node-server \
-              --restart unless-stopped \
-              -p 80:8000 \
-              kirankhadka/kiran-node-server:latest
+            docker compose up -d
+
+            docker image prune -f
