@@ -48,5 +48,5 @@ jobs:
             sudo docker run -d \
               --name kiran-node-server \
               --restart unless-stopped \
-              -p 8000:8000 \
+              -p 80:8000 \
               kirankhadka/kiran-node-server:latest
